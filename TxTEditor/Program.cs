@@ -26,6 +26,9 @@ namespace EditorDeTextoSimples
         private ToolStripMenuItem itemGuardarComo;
         private ToolStripMenuItem itemImprimir;
 
+        private int ultimaPosicaoPesquisa = 0; // Posição da última pesquisa
+        private string textoProcurado = ""; // Texto que está sendo procurado
+
         public FormularioEditorDeTexto()
         {
             // Configurar o formulário
@@ -110,6 +113,16 @@ namespace EditorDeTextoSimples
             ToolStripMenuItem itemItalico = new ToolStripMenuItem("Itálico");
             itemItalico.Click += AlternarItalico;
             menuEditar.DropDownItems.Add(itemItalico);
+
+            // Adicionar a opção "Localizar" no menu "Editar"
+            ToolStripMenuItem itemLocalizar = new ToolStripMenuItem("Localizar");
+            itemLocalizar.Click += LocalizarTexto;
+            menuEditar.DropDownItems.Add(itemLocalizar);
+
+            // Adicionar a opção "Substituir" no menu "Editar"
+            ToolStripMenuItem itemSubstituir = new ToolStripMenuItem("Substituir");
+            itemSubstituir.Click += SubstituirTexto;
+            menuEditar.DropDownItems.Add(itemSubstituir);
 
             // Adicionar o menu "Editar" à barra de menus
             barraDeMenus.Items.Add(menuEditar);
@@ -254,6 +267,103 @@ namespace EditorDeTextoSimples
             // Atualizar o estado do checkmark
             ToolStripMenuItem itemItalico = sender as ToolStripMenuItem;
             itemItalico.Checked = !itemItalico.Checked;
+        }
+
+        private void LocalizarTexto(object sender, EventArgs e)
+        {
+            // Solicitar o texto a ser localizado
+            string novoTextoProcurar = Microsoft.VisualBasic.Interaction.InputBox(
+                "Insira o texto a localizar:", 
+                "Localizar Texto", 
+                textoProcurado
+            );
+
+            if (!string.IsNullOrEmpty(novoTextoProcurar))
+            {
+                // Atualizar o texto procurado e reiniciar a posição de pesquisa se o texto mudou
+                if (novoTextoProcurar != textoProcurado)
+                {
+                    textoProcurado = novoTextoProcurar;
+                    ultimaPosicaoPesquisa = 0;
+                }
+
+                // Procurar o texto no RichTextBox
+                int posicao = caixaDeTexto.Find(textoProcurado, ultimaPosicaoPesquisa, RichTextBoxFinds.None);
+
+                if (posicao >= 0)
+                {
+                    // Seleciona o texto encontrado
+                    caixaDeTexto.Select(posicao, textoProcurado.Length);
+                    caixaDeTexto.Focus();
+
+                    // Atualizar a posição para a próxima pesquisa
+                    ultimaPosicaoPesquisa = posicao + textoProcurado.Length;
+                }
+                else
+                {
+                    // Reiniciar a pesquisa se chegar ao final
+                    MessageBox.Show("Fim da pesquisa. Reiniciando do início.", "Localizar", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ultimaPosicaoPesquisa = 0;
+                }
+
+                
+            }
+        }
+
+        private int ContarOcorrencias(string texto)
+        {
+            if (string.IsNullOrEmpty(texto))
+            {
+                return 0; // Retorna 0 se o texto a ser procurado for vazio
+            }
+
+            int contagem = 0;
+            int posicao = 0;
+
+            while (posicao < caixaDeTexto.TextLength)
+            {
+                // Procurar o texto a partir da posição atual
+                int novaPosicao = caixaDeTexto.Find(texto, posicao, RichTextBoxFinds.None);
+
+                if (novaPosicao >= 0)
+                {
+                    contagem++;
+                    posicao = novaPosicao + texto.Length; // Avançar a posição para evitar contagem repetida
+                }
+                else
+                {
+                    break; // Sai do loop se não houver mais ocorrências
+                }
+            }
+
+            return contagem;
+        }
+
+        private void SubstituirTexto(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(textoProcurado))
+            {
+                MessageBox.Show("Nenhuma palavra foi localizada para substituir.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string textoSubstituir = Microsoft.VisualBasic.Interaction.InputBox(
+                "Insira o texto para substituir:", 
+                "Substituir Texto", 
+                ""
+            );
+
+            if (!string.IsNullOrEmpty(textoSubstituir))
+            {
+                if (caixaDeTexto.SelectedText == textoProcurado)
+                {
+                    caixaDeTexto.SelectedText = textoSubstituir;
+                }
+                else
+                {
+                    MessageBox.Show("Nenhuma palavra selecionada para substituir.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
         }
     }
 }
