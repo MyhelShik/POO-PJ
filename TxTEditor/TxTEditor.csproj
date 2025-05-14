@@ -1,9 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>  <!-- Makes it a GUI app (not console) -->
-    <TargetFramework>net8.0-windows</TargetFramework>  <!-- Must include "-windows" -->
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>  <!-- Enables WinForms -->
-  </PropertyGroup>
-</Project>
