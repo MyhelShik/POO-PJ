@@ -1,13 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "hPHb1X3CuZw=",
+  "dgSpecHash": "LL67m4nx8BI=",
   "success": true,
-  "projectFilePath": "C:\\Users\\pedro\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\pedro\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.15\\microsoft.netcore.app.ref.8.0.15.nupkg.sha512",
-    "C:\\Users\\pedro\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.15\\microsoft.windowsdesktop.app.ref.8.0.15.nupkg.sha512",
-    "C:\\Users\\pedro\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.15\\microsoft.aspnetcore.app.ref.8.0.15.nupkg.sha512",
-    "C:\\Users\\pedro\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.15\\microsoft.netcore.app.host.win-x64.8.0.15.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\gafga\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }

@@ -136,22 +136,36 @@ namespace EditorDeTextoSimples
         private void AbrirFicheiro(object sender, EventArgs e)
         {
             OpenFileDialog dialogoAbrirFicheiro = new OpenFileDialog();
-            dialogoAbrirFicheiro.Filter = "Ficheiros de Texto (*.txt)|*.txt|Todos os Ficheiros (*.*)|*.*";
+            dialogoAbrirFicheiro.Filter = "Ficheiros RTF (*.rtf)|*.rtf|Ficheiros de Texto (*.txt)|*.txt|Todos os Ficheiros (*.*)|*.*";
 
             if (dialogoAbrirFicheiro.ShowDialog() == DialogResult.OK)
             {
-                caixaDeTexto.Text = File.ReadAllText(dialogoAbrirFicheiro.FileName);
+                if (dialogoAbrirFicheiro.FileName.EndsWith(".rtf", StringComparison.OrdinalIgnoreCase))
+                {
+                    caixaDeTexto.LoadFile(dialogoAbrirFicheiro.FileName, RichTextBoxStreamType.RichText);
+                }
+                else
+                {
+                    caixaDeTexto.Text = File.ReadAllText(dialogoAbrirFicheiro.FileName);
+                }
             }
         }
 
         private void GuardarFicheiro(object sender, EventArgs e)
         {
             SaveFileDialog dialogoGuardarFicheiro = new SaveFileDialog();
-            dialogoGuardarFicheiro.Filter = "Ficheiros de Texto (*.txt)|*.txt|Todos os Ficheiros (*.*)|*.*";
-
+            dialogoGuardarFicheiro.Filter = "Ficheiros RTF (*.rtf)|*.rtf|Ficheiros de Texto (*.txt)|*.txt|Todos os Ficheiros (*.*)|*.*";
+            
             if (dialogoGuardarFicheiro.ShowDialog() == DialogResult.OK)
             {
-                File.WriteAllText(dialogoGuardarFicheiro.FileName, caixaDeTexto.Text);
+                if (dialogoGuardarFicheiro.FilterIndex == 1) // RTF format selected
+                {
+                    caixaDeTexto.SaveFile(dialogoGuardarFicheiro.FileName, RichTextBoxStreamType.RichText);
+                }
+                else // Plain text format
+                {
+                    File.WriteAllText(dialogoGuardarFicheiro.FileName, caixaDeTexto.Text);
+                }
             }
         }
 
