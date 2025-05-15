@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\pedro\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj": {}
+    "c:\\Users\\pedro\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj": {}
   },
   "projects": {
-    "C:\\Users\\pedro\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj": {
+    "c:\\Users\\pedro\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\pedro\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
+        "projectUniqueName": "c:\\Users\\pedro\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
         "projectName": "TxTEditor",
-        "projectPath": "C:\\Users\\pedro\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
+        "projectPath": "c:\\Users\\pedro\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
         "packagesPath": "C:\\Users\\pedro\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\pedro\\Documents\\GitHub\\POO-PJ\\TxTEditor\\obj\\",
+        "outputPath": "c:\\Users\\pedro\\Documents\\GitHub\\POO-PJ\\TxTEditor\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\pedro\\AppData\\Roaming\\NuGet\\NuGet.Config"

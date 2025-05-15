@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "hPHb1X3CuZw=",
+  "dgSpecHash": "ZJjOYDR+/Hg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\pedro\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
+  "projectFilePath": "c:\\Users\\pedro\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\pedro\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.15\\microsoft.netcore.app.ref.8.0.15.nupkg.sha512",
     "C:\\Users\\pedro\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.15\\microsoft.windowsdesktop.app.ref.8.0.15.nupkg.sha512",

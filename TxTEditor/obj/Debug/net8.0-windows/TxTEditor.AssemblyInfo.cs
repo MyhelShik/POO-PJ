@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TxTEditor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cd65b7693ca6bc6fd114b7f65623b4ac853660fa")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7cacc2006a6ef3c1cf70d8786079d3b52d00e325")]
 [assembly: System.Reflection.AssemblyProductAttribute("TxTEditor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TxTEditor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
