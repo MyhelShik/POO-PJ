@@ -18,7 +18,7 @@ namespace EditorDeTextoSimples
 
     public class FormularioEditorDeTexto : Form
     {
-        private RichTextBox caixaDeTexto;
+        private RichTextBox caixaDeTexto { get; set; }
         private MenuStrip barraDeMenus;
         private ToolStripMenuItem menuFicheiro;
         private ToolStripMenuItem itemAbrir;
@@ -127,6 +127,9 @@ namespace EditorDeTextoSimples
             // Adicionar o menu "Editar" à barra de menus
             barraDeMenus.Items.Add(menuEditar);
 
+            // Criação da tabela Ajuda 
+
+
             // Adicionar controlos ao formulário
             this.Controls.Add(caixaDeTexto);
             this.Controls.Add(barraDeMenus);
@@ -172,7 +175,7 @@ namespace EditorDeTextoSimples
         private void GuardarComoFicheiro(object sender, EventArgs e)
         {
             SaveFileDialog dialogoGuardarComoFicheiro = new SaveFileDialog();
-            dialogoGuardarComoFicheiro.Filter = "Ficheiros de Texto (*.txt)|*.txt|Todos os Ficheiros (*.*)|*.*";
+            dialogoGuardarComoFicheiro.Filter = "Ficheiros RTF (*.rtf)|*.rtf|Ficheiros de Texto (*.txt)|*.txt|Todos os Ficheiros (*.*)|*.*";
 
             if (dialogoGuardarComoFicheiro.ShowDialog() == DialogResult.OK)
             {
@@ -285,43 +288,40 @@ namespace EditorDeTextoSimples
 
         private void LocalizarTexto(object sender, EventArgs e)
         {
-            // Solicitar o texto a ser localizado
-            string novoTextoProcurar = Microsoft.VisualBasic.Interaction.InputBox(
-                "Insira o texto a localizar:", 
-                "Localizar Texto", 
-                textoProcurado
-            );
-
-            if (!string.IsNullOrEmpty(novoTextoProcurar))
+            DialogoLocalizar dialogo = new DialogoLocalizar();
+            dialogo.TextoProcuradoAtualizado += (texto) =>
             {
-                // Atualizar o texto procurado e reiniciar a posição de pesquisa se o texto mudou
-                if (novoTextoProcurar != textoProcurado)
+                if (!string.IsNullOrEmpty(texto))
                 {
-                    textoProcurado = novoTextoProcurar;
-                    ultimaPosicaoPesquisa = 0;
+                    // Atualizar o texto procurado e reiniciar a posição de pesquisa se o texto mudou
+                    if (texto != textoProcurado)
+                    {
+                        textoProcurado = texto;
+                        ultimaPosicaoPesquisa = 0;
+                    }
+
+                    // Procurar o texto no RichTextBox
+                    int posicao = caixaDeTexto.Find(textoProcurado, ultimaPosicaoPesquisa, RichTextBoxFinds.None);
+
+                    if (posicao >= 0)
+                    {
+                        // Seleciona o texto encontrado
+                        caixaDeTexto.Select(posicao, textoProcurado.Length);
+                        caixaDeTexto.Focus();
+
+                        // Atualizar a posição para a próxima pesquisa
+                        ultimaPosicaoPesquisa = posicao + textoProcurado.Length;
+                    }
+                    else
+                    {
+                        // Reiniciar a pesquisa se chegar ao final
+                        MessageBox.Show("Fim da pesquisa. Reiniciando do início.", "Localizar", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ultimaPosicaoPesquisa = 0;
+                    }
                 }
+            };
 
-                // Procurar o texto no RichTextBox
-                int posicao = caixaDeTexto.Find(textoProcurado, ultimaPosicaoPesquisa, RichTextBoxFinds.None);
-
-                if (posicao >= 0)
-                {
-                    // Seleciona o texto encontrado
-                    caixaDeTexto.Select(posicao, textoProcurado.Length);
-                    caixaDeTexto.Focus();
-
-                    // Atualizar a posição para a próxima pesquisa
-                    ultimaPosicaoPesquisa = posicao + textoProcurado.Length;
-                }
-                else
-                {
-                    // Reiniciar a pesquisa se chegar ao final
-                    MessageBox.Show("Fim da pesquisa. Reiniciando do início.", "Localizar", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    ultimaPosicaoPesquisa = 0;
-                }
-
-                
-            }
+            dialogo.Show(this); // Exibe o diálogo sem bloquear o formulário principal
         }
 
         private int ContarOcorrencias(string texto)
@@ -362,8 +362,8 @@ namespace EditorDeTextoSimples
             }
 
             string textoSubstituir = Microsoft.VisualBasic.Interaction.InputBox(
-                "Insira o texto para substituir:", 
-                "Substituir Texto", 
+                "Insira o texto para substituir:",
+                "Substituir Texto",
                 ""
             );
 
@@ -378,6 +378,54 @@ namespace EditorDeTextoSimples
                     MessageBox.Show("Nenhuma palavra selecionada para substituir.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
+        }
+    }
+
+    public class DialogoLocalizar : Form
+    {
+        public event Action<string> TextoProcuradoAtualizado; // Evento para enviar o texto ao formulário principal
+        private TextBox caixaTexto;
+        public DialogoLocalizar()
+        {
+            this.Text = "Localizar";
+            this.Width = 300;
+            this.Height = 150;
+            this.TopMost = true; // Mantém a janela sempre no topo
+
+            Label label = new Label();
+            label.Text = "Insira o texto a procurar:";
+            label.Dock = DockStyle.Top;
+            label.Padding = new Padding(10);
+
+            caixaTexto = new TextBox();
+            caixaTexto.Dock = DockStyle.Top;
+            caixaTexto.Padding = new Padding(10);
+
+
+
+            Button botaoFechar = new Button();
+            botaoFechar.Text = "Fechar";
+            botaoFechar.Dock = DockStyle.Bottom;
+            botaoFechar.Click += (s, e) => this.Close();
+
+            this.Controls.Add(label);
+            this.Controls.Add(caixaTexto);
+            this.Controls.Add(botaoFechar);
+
+
+
+            //COnfigurar o evento de ENTER
+            caixaTexto.KeyDown += (s, e) =>
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    TextoProcuradoAtualizado?.Invoke(caixaTexto.Text); // Dispara o evento com o texto atual
+                    e.SuppressKeyPress = true; // Impede o som de "ding" ao pressionar Enter
+                    return;
+                }
+            };
+            // Configurar o foco no TextBox ao abrir o diálogo
+            this.Load += (s, e) => caixaTexto.Focus();
         }
     }
 }
