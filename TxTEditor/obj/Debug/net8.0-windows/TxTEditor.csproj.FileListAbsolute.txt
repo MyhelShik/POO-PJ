@@ -27,3 +27,4 @@ c:\Users\pedro\Documents\GitHub\POO-PJ\TxTEditor\obj\Debug\net8.0-windows\refint
 c:\Users\pedro\Documents\GitHub\POO-PJ\TxTEditor\obj\Debug\net8.0-windows\TxTEditor.pdb
 c:\Users\pedro\Documents\GitHub\POO-PJ\TxTEditor\obj\Debug\net8.0-windows\TxTEditor.genruntimeconfig.cache
 c:\Users\pedro\Documents\GitHub\POO-PJ\TxTEditor\obj\Debug\net8.0-windows\ref\TxTEditor.dll
+C:\Users\gafga\Documents\GitHub\POO-PJ\TxTEditor\obj\Debug\net8.0-windows\TxTEditor.sourcelink.json
