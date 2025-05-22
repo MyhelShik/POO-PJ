@@ -29,6 +29,8 @@ namespace EditorDeTextoSimples
         private int ultimaPosicaoPesquisa = 0; // Posição da última pesquisa
         private string textoProcurado = ""; // Texto que está sendo procurado
 
+        private string currentFilePath = null;
+        private int currentFileFilterIndex = 1;
         public FormularioEditorDeTexto()
         {
             // Configurar o formulário
@@ -41,6 +43,9 @@ namespace EditorDeTextoSimples
             caixaDeTexto.Multiline = true;
             caixaDeTexto.Dock = DockStyle.Fill;
             caixaDeTexto.ScrollBars = RichTextBoxScrollBars.Both;
+
+            // linking keys to ctrl+s func
+            caixaDeTexto.KeyDown += GuardarCtrlS;
 
             // Criar uma barra de menus
             barraDeMenus = new MenuStrip();
@@ -127,9 +132,6 @@ namespace EditorDeTextoSimples
             // Adicionar o menu "Editar" à barra de menus
             barraDeMenus.Items.Add(menuEditar);
 
-            // Criação da tabela Ajuda 
-
-
             // Adicionar controlos ao formulário
             this.Controls.Add(caixaDeTexto);
             this.Controls.Add(barraDeMenus);
@@ -153,34 +155,63 @@ namespace EditorDeTextoSimples
                 }
             }
         }
-
         private void GuardarFicheiro(object sender, EventArgs e)
         {
             SaveFileDialog dialogoGuardarFicheiro = new SaveFileDialog();
             dialogoGuardarFicheiro.Filter = "Ficheiros RTF (*.rtf)|*.rtf|Ficheiros de Texto (*.txt)|*.txt|Todos os Ficheiros (*.*)|*.*";
-            
+            dialogoGuardarFicheiro.FilterIndex = 1; // Default to RTF
+
             if (dialogoGuardarFicheiro.ShowDialog() == DialogResult.OK)
             {
-                if (dialogoGuardarFicheiro.FilterIndex == 1) // RTF format selected
-                {
-                    caixaDeTexto.SaveFile(dialogoGuardarFicheiro.FileName, RichTextBoxStreamType.RichText);
-                }
-                else // Plain text format
-                {
-                    File.WriteAllText(dialogoGuardarFicheiro.FileName, caixaDeTexto.Text);
-                }
+                SaveToFile(dialogoGuardarFicheiro.FileName);
             }
         }
 
         private void GuardarComoFicheiro(object sender, EventArgs e)
         {
-            SaveFileDialog dialogoGuardarComoFicheiro = new SaveFileDialog();
-            dialogoGuardarComoFicheiro.Filter = "Ficheiros RTF (*.rtf)|*.rtf|Ficheiros de Texto (*.txt)|*.txt|Todos os Ficheiros (*.*)|*.*";
+            SaveFileDialog dialogoGuardarFicheiro = new SaveFileDialog();
+            dialogoGuardarFicheiro.Filter = "Ficheiros RTF (*.rtf)|*.rtf|Ficheiros de Texto (*.txt)|*.txt|Todos os Ficheiros (*.*)|*.*";
+            dialogoGuardarFicheiro.FilterIndex = 1; // Default to RTF
 
-            if (dialogoGuardarComoFicheiro.ShowDialog() == DialogResult.OK)
+            if (dialogoGuardarFicheiro.ShowDialog() == DialogResult.OK)
             {
-                File.WriteAllText(dialogoGuardarComoFicheiro.FileName, caixaDeTexto.Text);
+                SaveToFile(dialogoGuardarFicheiro.FileName);
             }
+        }
+
+        private void GuardarCtrlS(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.S)
+            {
+                if (!string.IsNullOrEmpty(currentFilePath) && File.Exists(currentFilePath))
+                {
+                    SaveToFile(currentFilePath);
+                    ShowNotification("Ficheiro guardado!");
+                }
+                else
+                {
+                    SaveFileDialog dialogoGuardarFicheiro = new SaveFileDialog();
+                    dialogoGuardarFicheiro.Filter = "Ficheiros RTF (*.rtf)|*.rtf|Ficheiros de Texto (*.txt)|*.txt|Todos os Ficheiros (*.*)|*.*";
+                    dialogoGuardarFicheiro.FilterIndex = 1; // Default to RTF
+
+                    if (dialogoGuardarFicheiro.ShowDialog() == DialogResult.OK)
+                    {
+                        currentFilePath = dialogoGuardarFicheiro.FileName;
+                        SaveToFile(currentFilePath);
+                        ShowNotification("Ficheiro guardado!");
+                    }
+                }
+                e.Handled = true;
+            }
+        }
+
+        // Universal saving logic based on extension
+        private void SaveToFile(string filePath)
+        {
+            if (filePath.EndsWith(".rtf", StringComparison.OrdinalIgnoreCase))
+                caixaDeTexto.SaveFile(filePath, RichTextBoxStreamType.RichText);
+            else
+                File.WriteAllText(filePath, caixaDeTexto.Text);
         }
 
         private void ImprimirFicheiro(object sender, EventArgs e)
@@ -219,6 +250,25 @@ namespace EditorDeTextoSimples
             }
         }
 
+
+        private void ShowNotification(string message)
+        {
+            NotifyIcon notifyIcon = new NotifyIcon();
+            notifyIcon.Visible = true;
+            notifyIcon.Icon = SystemIcons.Information;
+            notifyIcon.BalloonTipTitle = "Editor de Texto Simples";
+            notifyIcon.BalloonTipText = message;
+            notifyIcon.ShowBalloonTip(3000);
+
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+            timer.Interval = 3000;
+            timer.Tick += (s, args) =>
+            {
+                notifyIcon.Dispose();
+                timer.Dispose();
+            };
+            timer.Start();
+        }
         private void SairPrograma(object sender, EventArgs e)
         {
             Application.Exit(); // Fecha todo o programa
