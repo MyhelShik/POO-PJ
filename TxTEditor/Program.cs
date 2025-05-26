@@ -26,6 +26,11 @@ namespace EditorDeTextoSimples
         private ToolStripMenuItem itemGuardarComo;
         private ToolStripMenuItem itemImprimir;
 
+        // Novos campos
+        private StatusStrip barraDeEstado;
+        private ToolStripStatusLabel labelEstado;
+        private bool modoEscuro = false;
+
         private int ultimaPosicaoPesquisa = 0; // Posição da última pesquisa
         private string textoProcurado = ""; // Texto que está sendo procurado
 
@@ -41,6 +46,14 @@ namespace EditorDeTextoSimples
             caixaDeTexto.Multiline = true;
             caixaDeTexto.Dock = DockStyle.Fill;
             caixaDeTexto.ScrollBars = RichTextBoxScrollBars.Both;
+
+            // Atualizar contador ao digitar
+            caixaDeTexto.TextChanged += (s, e) => AtualizarBarraEstado();
+
+            // Criar barra de estado
+            barraDeEstado = new StatusStrip();
+            labelEstado = new ToolStripStatusLabel();
+            barraDeEstado.Items.Add(labelEstado);
 
             // Criar uma barra de menus
             barraDeMenus = new MenuStrip();
@@ -61,13 +74,8 @@ namespace EditorDeTextoSimples
             menuFicheiro.DropDownItems.Add(itemAbrir);
             menuFicheiro.DropDownItems.Add(itemGuardar);
             menuFicheiro.DropDownItems.Add(itemGuardarComo);
-
-            // Adicionar um separador
             menuFicheiro.DropDownItems.Add(new ToolStripSeparator());
-
             menuFicheiro.DropDownItems.Add(itemImprimir);
-
-            // Adicionar outro separador
             menuFicheiro.DropDownItems.Add(new ToolStripSeparator());
 
             ToolStripMenuItem itemSair = new ToolStripMenuItem("Sair");
@@ -80,11 +88,8 @@ namespace EditorDeTextoSimples
 
             ToolStripMenuItem itemNovaJanela = new ToolStripMenuItem("Nova Janela");
             itemNovaJanela.Click += AbrirNovaJanela;
-            menuFicheiro.DropDownItems.Add(new ToolStripSeparator()); // Adicionar um separador
+            menuFicheiro.DropDownItems.Add(new ToolStripSeparator());
             menuFicheiro.DropDownItems.Add(itemNovaJanela);
-
-            menuFicheiro.DropDownItems.Add(itemFecharJanela);
-            menuFicheiro.DropDownItems.Add(itemSair);
 
             barraDeMenus.Items.Add(menuFicheiro);
 
@@ -101,7 +106,6 @@ namespace EditorDeTextoSimples
             itemTamanhoLetra.Click += MudarTamanhoLetra;
             menuEditar.DropDownItems.Add(itemTamanhoLetra);
 
-            // Separador
             menuEditar.DropDownItems.Add(new ToolStripSeparator());
 
             // Opção para negrito
@@ -124,13 +128,143 @@ namespace EditorDeTextoSimples
             itemSubstituir.Click += SubstituirTexto;
             menuEditar.DropDownItems.Add(itemSubstituir);
 
-            // Adicionar o menu "Editar" à barra de menus
+            // --------- NOVAS FUNCIONALIDADES ---------
+
+            // Desfazer
+            ToolStripMenuItem itemDesfazer = new ToolStripMenuItem("Desfazer");
+            itemDesfazer.ShortcutKeys = Keys.Control | Keys.Z;
+            itemDesfazer.Click += (s, e) => caixaDeTexto.Undo();
+            menuEditar.DropDownItems.Add(itemDesfazer);
+
+            // Refazer
+            ToolStripMenuItem itemRefazer = new ToolStripMenuItem("Refazer");
+            itemRefazer.ShortcutKeys = Keys.Control | Keys.Y;
+            itemRefazer.Click += (s, e) => caixaDeTexto.Redo();
+            menuEditar.DropDownItems.Add(itemRefazer);
+
+            // Limpar texto
+            ToolStripMenuItem itemLimpar = new ToolStripMenuItem("Limpar Tudo");
+            itemLimpar.Click += (s, e) =>
+            {
+                if (MessageBox.Show("Tem certeza que deseja limpar todo o texto?", "Limpar", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    caixaDeTexto.Clear();
+            };
+            menuEditar.DropDownItems.Add(itemLimpar);
+
+            // Alternar modo escuro
+            ToolStripMenuItem itemModoEscuro = new ToolStripMenuItem("Alternar Modo Escuro");
+            itemModoEscuro.Click += (s, e) => AlternarModoEscuro();
+            menuEditar.DropDownItems.Add(itemModoEscuro);
+
             barraDeMenus.Items.Add(menuEditar);
+
+            // Adicionar o menu "Diversão"
+            ToolStripMenuItem menuDiversao = new ToolStripMenuItem("Diversão");
+
+            // 1. Inserir Emoji Aleatório
+            ToolStripMenuItem itemEmoji = new ToolStripMenuItem("Inserir Emoji Aleatório");
+            itemEmoji.Click += (s, e) =>
+            {
+                string[] emojis = { "😂", "😎", "🤖", "🐱‍👤", "🥳", "🦄", "🍕", "🚀", "💡", "🎉" };
+                Random rnd = new Random();
+                string emoji = emojis[rnd.Next(emojis.Length)];
+                int pos = caixaDeTexto.SelectionStart;
+                caixaDeTexto.Text = caixaDeTexto.Text.Insert(pos, emoji);
+                caixaDeTexto.SelectionStart = pos + emoji.Length;
+                caixaDeTexto.Focus();
+            };
+            menuDiversao.DropDownItems.Add(itemEmoji);
+
+            // 2. Colorir Palavras Aleatórias
+            ToolStripMenuItem itemColorir = new ToolStripMenuItem("Colorir Palavras Aleatórias");
+            itemColorir.Click += (s, e) =>
+            {
+                string[] cores = { "Red", "Blue", "Green", "Orange", "Purple" };
+                Random rnd = new Random();
+                string[] palavras = caixaDeTexto.Text.Split(' ');
+                caixaDeTexto.SelectAll();
+                caixaDeTexto.SelectionColor = Color.Black; // Resetar cor
+
+                int pos = 0;
+                for (int i = 0; i < palavras.Length; i++)
+                {
+                    string palavra = palavras[i];
+                    if (!string.IsNullOrWhiteSpace(palavra) && rnd.NextDouble() < 0.2) // 20% de chance de colorir
+                    {
+                        caixaDeTexto.Select(pos, palavra.Length);
+                        caixaDeTexto.SelectionColor = Color.FromName(cores[rnd.Next(cores.Length)]);
+                    }
+                    pos += palavra.Length + 1;
+                }
+                caixaDeTexto.SelectionStart = caixaDeTexto.TextLength;
+                caixaDeTexto.SelectionColor = Color.Black;
+                caixaDeTexto.Focus();
+            };
+            menuDiversao.DropDownItems.Add(itemColorir);
+
+            // 3. Mensagem Engraçada Aleatória
+            ToolStripMenuItem itemMensagem = new ToolStripMenuItem("Mensagem Engraçada Aleatória");
+            itemMensagem.Click += (s, e) =>
+            {
+                string[] frases = {
+                    "Preciso de café! ☕",
+                    "Já salvou seu trabalho hoje?",
+                    "Este editor é 100% divertido!",
+                    "Parabéns, você encontrou o easter egg!",
+                    "Hora de uma pausa! 😁"
+                };
+                Random rnd = new Random();
+                string frase = frases[rnd.Next(frases.Length)];
+                int pos = rnd.Next(0, caixaDeTexto.TextLength + 1);
+                caixaDeTexto.Text = caixaDeTexto.Text.Insert(pos, "\n" + frase + "\n");
+                caixaDeTexto.SelectionStart = pos + frase.Length + 2;
+                caixaDeTexto.Focus();
+            };
+            menuDiversao.DropDownItems.Add(itemMensagem);
+
+            barraDeMenus.Items.Add(menuDiversao);
 
             // Adicionar controlos ao formulário
             this.Controls.Add(caixaDeTexto);
             this.Controls.Add(barraDeMenus);
+            this.Controls.Add(barraDeEstado);
             this.MainMenuStrip = barraDeMenus;
+
+            AtualizarBarraEstado();
+        }
+
+        // NOVO: Atualizar barra de estado com contador de caracteres e palavras
+        private void AtualizarBarraEstado()
+        {
+            int caracteres = caixaDeTexto.Text.Length;
+            int palavras = string.IsNullOrWhiteSpace(caixaDeTexto.Text) ? 0 : caixaDeTexto.Text.Split(new[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length;
+            labelEstado.Text = $"Caracteres: {caracteres} | Palavras: {palavras}";
+        }
+
+        // NOVO: Alternar modo escuro/claro
+        private void AlternarModoEscuro()
+        {
+            modoEscuro = !modoEscuro;
+            if (modoEscuro)
+            {
+                this.BackColor = Color.FromArgb(30, 30, 30);
+                caixaDeTexto.BackColor = Color.FromArgb(40, 40, 40);
+                caixaDeTexto.ForeColor = Color.White;
+                barraDeMenus.BackColor = Color.FromArgb(45, 45, 45);
+                barraDeMenus.ForeColor = Color.White;
+                barraDeEstado.BackColor = Color.FromArgb(45, 45, 45);
+                barraDeEstado.ForeColor = Color.White;
+            }
+            else
+            {
+                this.BackColor = SystemColors.Control;
+                caixaDeTexto.BackColor = Color.White;
+                caixaDeTexto.ForeColor = Color.Black;
+                barraDeMenus.BackColor = SystemColors.Control;
+                barraDeMenus.ForeColor = Color.Black;
+                barraDeEstado.BackColor = SystemColors.Control;
+                barraDeEstado.ForeColor = Color.Black;
+            }
         }
 
         private void AbrirFicheiro(object sender, EventArgs e)
