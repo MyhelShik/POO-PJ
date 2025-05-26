@@ -138,6 +138,7 @@ namespace EditorDeTextoSimples
             this.MainMenuStrip = barraDeMenus;
         }
 
+
         private void AbrirFicheiro(object sender, EventArgs e)
         {
             OpenFileDialog dialogoAbrirFicheiro = new OpenFileDialog();
@@ -157,25 +158,36 @@ namespace EditorDeTextoSimples
         }
         private void GuardarFicheiro(object sender, EventArgs e)
         {
-            SaveFileDialog dialogoGuardarFicheiro = new SaveFileDialog();
-            dialogoGuardarFicheiro.Filter = "Ficheiros RTF (*.rtf)|*.rtf|Ficheiros de Texto (*.txt)|*.txt|Todos os Ficheiros (*.*)|*.*";
-            dialogoGuardarFicheiro.FilterIndex = 1; // Default to RTF
-
-            if (dialogoGuardarFicheiro.ShowDialog() == DialogResult.OK)
+            if (!string.IsNullOrEmpty(currentFilePath) && File.Exists(currentFilePath))
             {
-                SaveToFile(dialogoGuardarFicheiro.FileName);
+                SaveToFile(currentFilePath);
+                ShowNotification("Ficheiro guardado!");
+            }
+            else
+            {
+                GuardarComoFicheiro(sender, e); // dialogue menu
             }
         }
 
         private void GuardarComoFicheiro(object sender, EventArgs e)
         {
             SaveFileDialog dialogoGuardarFicheiro = new SaveFileDialog();
-            dialogoGuardarFicheiro.Filter = "Ficheiros RTF (*.rtf)|*.rtf|Ficheiros de Texto (*.txt)|*.txt|Todos os Ficheiros (*.*)|*.*";
-            dialogoGuardarFicheiro.FilterIndex = 1; // Default to RTF
+            dialogoGuardarFicheiro.FilterIndex = 1;
+
+            if (ContainsFormatting(caixaDeTexto))
+            {
+                dialogoGuardarFicheiro.Filter = "Ficheiros RTF (*.rtf)|*.rtf|Ficheiros de Texto (*.txt)|*.txt|Todos os Ficheiros (*.*)|*.*";
+            }
+            else
+            {
+                dialogoGuardarFicheiro.Filter = "Ficheiros de Texto (*.txt)|*.txt|Ficheiros RTF (*.rtf)|*.rtf|Todos os Ficheiros (*.*)|*.*";
+            }
 
             if (dialogoGuardarFicheiro.ShowDialog() == DialogResult.OK)
             {
-                SaveToFile(dialogoGuardarFicheiro.FileName);
+                currentFilePath = dialogoGuardarFicheiro.FileName;
+                SaveToFile(currentFilePath);
+                ShowNotification("Ficheiro guardado!");
             }
         }
 
@@ -183,24 +195,7 @@ namespace EditorDeTextoSimples
         {
             if (e.Control && e.KeyCode == Keys.S)
             {
-                if (!string.IsNullOrEmpty(currentFilePath) && File.Exists(currentFilePath))
-                {
-                    SaveToFile(currentFilePath);
-                    ShowNotification("Ficheiro guardado!");
-                }
-                else
-                {
-                    SaveFileDialog dialogoGuardarFicheiro = new SaveFileDialog();
-                    dialogoGuardarFicheiro.Filter = "Ficheiros RTF (*.rtf)|*.rtf|Ficheiros de Texto (*.txt)|*.txt|Todos os Ficheiros (*.*)|*.*";
-                    dialogoGuardarFicheiro.FilterIndex = 1; // Default to RTF
-
-                    if (dialogoGuardarFicheiro.ShowDialog() == DialogResult.OK)
-                    {
-                        currentFilePath = dialogoGuardarFicheiro.FileName;
-                        SaveToFile(currentFilePath);
-                        ShowNotification("Ficheiro guardado!");
-                    }
-                }
+                GuardarFicheiro(sender, e);
                 e.Handled = true;
             }
         }
@@ -212,6 +207,19 @@ namespace EditorDeTextoSimples
                 caixaDeTexto.SaveFile(filePath, RichTextBoxStreamType.RichText);
             else
                 File.WriteAllText(filePath, caixaDeTexto.Text);
+        }
+
+        private bool ContainsFormatting(RichTextBox rtb)
+        {
+            rtb.SelectAll();
+            Font currentFont = rtb.SelectionFont;
+
+            if (currentFont == null) return true; // Mixed fonts/styles = formatting exists
+
+            bool hasFormatting = currentFont.Bold || currentFont.Italic || currentFont.Underline;
+
+            rtb.DeselectAll();
+            return hasFormatting;
         }
 
         private void ImprimirFicheiro(object sender, EventArgs e)
