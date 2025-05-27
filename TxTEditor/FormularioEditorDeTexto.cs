@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using System.Drawing.Printing;
-using System.Text.RegularExpressions; // Добавлено для Regex
+using System.Text.RegularExpressions; // Regex NAO TOCA ou a logica do find morre
 
 namespace EditorDeTextoSimples
 {
@@ -301,8 +301,8 @@ namespace EditorDeTextoSimples
             itemItalico.Checked = !itemItalico.Checked;
         }
 
-        // Новый метод поиска только целых слов!
-        private int FindWholeWord(string text, string word, int startIndex)
+        // Novo método para encontrar com REGEX e preventer espaco
+        private int EncontarTodaPalavra(string text, string word, int startIndex)
         {
             if (string.IsNullOrEmpty(word))
                 return -1;
@@ -314,21 +314,21 @@ namespace EditorDeTextoSimples
 
         private void HighlightCurrent(int posicao, int length)
         {
-            // Сбросить старую подсветку
+            // remover highlight velho
             int selectionStart = caixaDeTexto.SelectionStart;
             int selectionLength = caixaDeTexto.SelectionLength;
             caixaDeTexto.SelectAll();
             caixaDeTexto.SelectionBackColor = caixaDeTexto.BackColor;
             caixaDeTexto.DeselectAll();
 
-            // Подсветить только найденное слово
+            // highlight so a palavra encontrada
             if (posicao >= 0 && length > 0)
             {
                 caixaDeTexto.Select(posicao, length);
                 caixaDeTexto.SelectionBackColor = Color.LightSkyBlue;
             }
 
-            // Вернуть пользователю его выделение (если нужно)
+            // Retornar o highlight ao user se precisa
             caixaDeTexto.SelectionStart = selectionStart;
             caixaDeTexto.SelectionLength = selectionLength;
         }
@@ -346,23 +346,23 @@ namespace EditorDeTextoSimples
                         ultimaPosicaoPesquisa = 0;
                     }
 
-                    int posicao = FindWholeWord(caixaDeTexto.Text, textoProcurado, ultimaPosicaoPesquisa);
+                    int posicao = EncontarTodaPalavra(caixaDeTexto.Text, textoProcurado, ultimaPosicaoPesquisa);
 
                     if (posicao >= 0)
                     {
-                        HighlightCurrent(posicao, textoProcurado.Length); // Подсветить только найденное слово
+                        HighlightCurrent(posicao, textoProcurado.Length); // highlight so palavra encontrada
                         ultimaPosicaoPesquisa = posicao + textoProcurado.Length;
                     }
                     else
                     {
                         MessageBox.Show("Fim da pesquisa. Reiniciando do início.", "Localizar", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         ultimaPosicaoPesquisa = 0;
-                        HighlightCurrent(-1, 0); // Снять подсветку при отсутствии совпадений
+                        HighlightCurrent(-1, 0); // remover highlight
                     }
                 }
                 else
                 {
-                    HighlightCurrent(-1, 0); // Сбросить подсветку если строка поиска пуста
+                    HighlightCurrent(-1, 0); // remover e retornar o highlight se nada foi encontrada e foi vazio
                 }
             };
 
@@ -373,8 +373,8 @@ namespace EditorDeTextoSimples
                     if (caixaDeTexto.SelectedText.Equals(textoProcurado, StringComparison.CurrentCultureIgnoreCase))
                     {
                         caixaDeTexto.SelectedText = textoSubstituir;
-                        // После замены заново подсветить новое совпадение
-                        int posicao = FindWholeWord(caixaDeTexto.Text, textoProcurado, ultimaPosicaoPesquisa - textoProcurado.Length);
+                        // depois da substituicao fazer highlight de novo da nova palavra substituida
+                        int posicao = EncontarTodaPalavra(caixaDeTexto.Text, textoProcurado, ultimaPosicaoPesquisa - textoProcurado.Length);
                         HighlightCurrent(posicao, textoProcurado.Length);
                     }
                     else
@@ -403,7 +403,7 @@ namespace EditorDeTextoSimples
 
             while (posicao < caixaDeTexto.TextLength)
             {
-                int novaPosicao = FindWholeWord(caixaDeTexto.Text, texto, posicao);
+                int novaPosicao = EncontarTodaPalavra(caixaDeTexto.Text, texto, posicao);
 
                 if (novaPosicao >= 0)
                 {

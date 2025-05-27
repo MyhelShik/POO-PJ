@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\gafga\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
+      "projectUniqueName": "C:\\Users\\gafga\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
       "projectName": "TxTEditor",
-      "projectPath": "C:\\Users\\gafga\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
+      "projectPath": "C:\\Users\\gafga\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
       "packagesPath": "C:\\Users\\gafga\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\gafga\\Desktop\\POO-PJ\\TxTEditor\\obj\\",
+      "outputPath": "C:\\Users\\gafga\\Documents\\GitHub\\POO-PJ\\TxTEditor\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\gafga\\AppData\\Roaming\\NuGet\\NuGet.Config",
