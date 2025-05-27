@@ -1,24 +1,29 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\MyhelShik\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj": {}
+    "C:\\Users\\gafga\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj": {}
   },
   "projects": {
-    "C:\\Users\\MyhelShik\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj": {
+    "C:\\Users\\gafga\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\MyhelShik\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
+        "projectUniqueName": "C:\\Users\\gafga\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
         "projectName": "TxTEditor",
-        "projectPath": "C:\\Users\\MyhelShik\\Documents\\GitHub\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
-        "packagesPath": "C:\\Users\\MyhelShik\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\MyhelShik\\Documents\\GitHub\\POO-PJ\\TxTEditor\\obj\\",
+        "projectPath": "C:\\Users\\gafga\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
+        "packagesPath": "C:\\Users\\gafga\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\gafga\\Desktop\\POO-PJ\\TxTEditor\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\MyhelShik\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\gafga\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0-windows"
         ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
         "frameworks": {
           "net8.0-windows7.0": {
             "targetAlias": "net8.0-windows",
