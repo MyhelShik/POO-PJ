@@ -314,23 +314,22 @@ namespace EditorDeTextoSimples
 
         private void HighlightCurrent(int posicao, int length)
         {
-            // remover highlight velho
-            int selectionStart = caixaDeTexto.SelectionStart;
-            int selectionLength = caixaDeTexto.SelectionLength;
             caixaDeTexto.SelectAll();
             caixaDeTexto.SelectionBackColor = caixaDeTexto.BackColor;
             caixaDeTexto.DeselectAll();
 
-            // highlight so a palavra encontrada
             if (posicao >= 0 && length > 0)
             {
                 caixaDeTexto.Select(posicao, length);
                 caixaDeTexto.SelectionBackColor = Color.LightSkyBlue;
+                caixaDeTexto.SelectionStart = posicao;
+                caixaDeTexto.SelectionLength = length;
             }
-
-            // Retornar o highlight ao user se precisa
-            caixaDeTexto.SelectionStart = selectionStart;
-            caixaDeTexto.SelectionLength = selectionLength;
+            else
+            {
+                caixaDeTexto.SelectionStart = 0;
+                caixaDeTexto.SelectionLength = 0;
+            }
         }
 
         private void LocalizarTexto(object sender, EventArgs e)
