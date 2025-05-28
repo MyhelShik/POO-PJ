@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\danie\\OneDrive\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj": {}
+    "C:\\Users\\danie\\OneDrive\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj": {}
   },
   "projects": {
-    "c:\\Users\\danie\\OneDrive\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj": {
+    "C:\\Users\\danie\\OneDrive\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\danie\\OneDrive\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
+        "projectUniqueName": "C:\\Users\\danie\\OneDrive\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
         "projectName": "TxTEditor",
-        "projectPath": "c:\\Users\\danie\\OneDrive\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
+        "projectPath": "C:\\Users\\danie\\OneDrive\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
         "packagesPath": "C:\\Users\\danie\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\danie\\OneDrive\\Desktop\\POO-PJ\\TxTEditor\\obj\\",
+        "outputPath": "C:\\Users\\danie\\OneDrive\\Desktop\\POO-PJ\\TxTEditor\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\danie\\AppData\\Roaming\\NuGet\\NuGet.Config"

@@ -3,6 +3,14 @@ using System.Windows.Forms;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Printing;
+<<<<<<< Updated upstream
+using System.Collections.Generic;
+using System.Linq;
+// Para exportar PDF, instale o pacote NuGet iTextSharp:
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+=======
+>>>>>>> Stashed changes
 
 namespace EditorDeTextoSimples
 {
