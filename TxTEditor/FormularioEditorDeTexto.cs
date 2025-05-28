@@ -302,15 +302,13 @@ namespace EditorDeTextoSimples
         }
 
         // Novo método para encontrar com REGEX e preventer espaco
-        private int EncontarTodaPalavra(string text, string word, int startIndex)
-        {
-            if (string.IsNullOrEmpty(word))
-                return -1;
+        private int EncontrarSubstring(string text, string substring, int startIndex)
+{
+    if (string.IsNullOrEmpty(substring))
+        return -1;
 
-            var regex = new Regex(@"\b" + Regex.Escape(word) + @"\b", RegexOptions.IgnoreCase);
-            Match match = regex.Match(text, startIndex);
-            return match.Success ? match.Index : -1;
-        }
+    return text.IndexOf(substring, startIndex, StringComparison.CurrentCultureIgnoreCase);
+}
 
         private void HighlightCurrent(int posicao, int length)
         {
@@ -335,57 +333,51 @@ namespace EditorDeTextoSimples
         }
         
         private void HighlightAllOccurrences(string word)
-        {
-            caixaDeTexto.SelectAll();
-            caixaDeTexto.SelectionBackColor = caixaDeTexto.BackColor;
-            caixaDeTexto.DeselectAll();
+{
+    caixaDeTexto.SelectAll();
+    caixaDeTexto.SelectionBackColor = caixaDeTexto.BackColor;
+    caixaDeTexto.DeselectAll();
 
-            if (string.IsNullOrEmpty(word))
-                return;
+    if (string.IsNullOrEmpty(word))
+        return;
 
-            var regex = new Regex(@"\b" + Regex.Escape(word) + @"\b", RegexOptions.IgnoreCase);
-            var matches = regex.Matches(caixaDeTexto.Text);
-            foreach (Match match in matches)
-            {
-                caixaDeTexto.Select(match.Index, match.Length);
-                caixaDeTexto.SelectionBackColor = Color.LightSkyBlue;
-            }
-            caixaDeTexto.SelectionStart = 0;
-            caixaDeTexto.SelectionLength = 0;
-        }
+    int start = 0;
+    while ((start = caixaDeTexto.Text.IndexOf(word, start, StringComparison.CurrentCultureIgnoreCase)) != -1)
+    {
+        caixaDeTexto.Select(start, word.Length);
+        caixaDeTexto.SelectionBackColor = Color.LightSkyBlue;
+        start += word.Length;
+    }
+    caixaDeTexto.SelectionStart = 0;
+    caixaDeTexto.SelectionLength = 0;
+}
 
 private void LocalizarTexto(object sender, EventArgs e)
 {
     DialogoLocalizar dialogo = new DialogoLocalizar();
-    dialogo.TextoProcuradoAtualizado += (texto) =>
+  dialogo.TextoProcuradoAtualizado += (texto) =>
+{
+    textoProcurado = texto;
+    ultimaPosicaoPesquisa = 0;
+
+    if (!string.IsNullOrEmpty(textoProcurado))
     {
-        if (!string.IsNullOrEmpty(texto))
+        int posicao = EncontrarSubstring(caixaDeTexto.Text, textoProcurado, 0); // sempre do início
+        if (posicao >= 0)
         {
-            if (texto != textoProcurado)
-            {
-                textoProcurado = texto;
-                ultimaPosicaoPesquisa = 0;
-            }
-
-            int posicao = EncontarTodaPalavra(caixaDeTexto.Text, textoProcurado, ultimaPosicaoPesquisa);
-
-            if (posicao >= 0)
-            {
-                HighlightCurrent(posicao, textoProcurado.Length); // highlight so palavra encontrada
-                ultimaPosicaoPesquisa = posicao + textoProcurado.Length;
-            }
-            else
-            {
-                MessageBox.Show("Fim da pesquisa. Reiniciando do início.", "Localizar", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                ultimaPosicaoPesquisa = 0;
-                HighlightCurrent(-1, 0); // remover highlight
-            }
+            HighlightCurrent(posicao, textoProcurado.Length);
+            caixaDeTexto.ScrollToCaret();
         }
         else
         {
-            HighlightCurrent(-1, 0); // remover e retornar highlight se nao ha nada
+            HighlightCurrent(-1, 0); // limpa highlight
         }
-    };
+    }
+    else
+    {
+        HighlightCurrent(-1, 0); // limpa highlight
+    }
+};
 
     dialogo.SubstituirTextoRequisitado += (textoSubstituir) =>
     {
@@ -394,8 +386,7 @@ private void LocalizarTexto(object sender, EventArgs e)
             if (caixaDeTexto.SelectedText.Equals(textoProcurado, StringComparison.CurrentCultureIgnoreCase))
             {
                 caixaDeTexto.SelectedText = textoSubstituir;
-                int posicao = EncontarTodaPalavra(caixaDeTexto.Text, textoProcurado, ultimaPosicaoPesquisa - textoProcurado.Length);
-                HighlightCurrent(posicao, textoProcurado.Length);
+            int posicao = EncontrarSubstring(caixaDeTexto.Text, textoProcurado, ultimaPosicaoPesquisa);                HighlightCurrent(posicao, textoProcurado.Length);
             }
             else
             {
@@ -409,19 +400,18 @@ private void LocalizarTexto(object sender, EventArgs e)
     };
 
     dialogo.ReplaceAllRequested += (textoSubstituir) =>
+{
+    if (!string.IsNullOrEmpty(textoProcurado) && !string.IsNullOrEmpty(textoSubstituir))
     {
-        if (!string.IsNullOrEmpty(textoProcurado) && !string.IsNullOrEmpty(textoSubstituir))
-        {
-            var regex = new Regex(@"\b" + Regex.Escape(textoProcurado) + @"\b", RegexOptions.IgnoreCase);
-            caixaDeTexto.Text = regex.Replace(caixaDeTexto.Text, textoSubstituir);
-            HighlightCurrent(-1, 0);
-            MessageBox.Show("Todos coincidências foram substituidos.", "Substituir tudo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-        else
-        {
-            MessageBox.Show("Insire teixto para localizar e substituir.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        }
-    };
+        caixaDeTexto.Text = caixaDeTexto.Text.Replace(textoProcurado, textoSubstituir, StringComparison.CurrentCultureIgnoreCase);
+        HighlightCurrent(-1, 0);
+        MessageBox.Show("Todas as ocorrências foram substituídas.", "Substituir tudo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+    else
+    {
+        MessageBox.Show("Insira texto para localizar e substituir.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+    }
+};
 
     dialogo.HighlightAllToggled += (highlightAll) =>
     {
@@ -438,32 +428,29 @@ private void LocalizarTexto(object sender, EventArgs e)
     dialogo.Show(this);
 }
         private int ContarOcorrencias(string texto)
+{
+    if (string.IsNullOrEmpty(texto))
+        return 0;
+
+    int contagem = 0;
+    int posicao = 0;
+
+    while (true)
+    {
+        posicao = EncontrarSubstring(caixaDeTexto.Text, texto, posicao);
+        if (posicao >= 0)
         {
-            if (string.IsNullOrEmpty(texto))
-            {
-                return 0;
-            }
-
-            int contagem = 0;
-            int posicao = 0;
-
-            while (posicao < caixaDeTexto.TextLength)
-            {
-                int novaPosicao = EncontarTodaPalavra(caixaDeTexto.Text, texto, posicao);
-
-                if (novaPosicao >= 0)
-                {
-                    contagem++;
-                    posicao = novaPosicao + texto.Length;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return contagem;
+            contagem++;
+            posicao += texto.Length;
         }
+        else
+        {
+            break;
+        }
+    }
+
+    return contagem;
+}
 
         private void SubstituirTexto(object sender, EventArgs e)
         {
