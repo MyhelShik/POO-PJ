@@ -314,10 +314,12 @@ namespace EditorDeTextoSimples
 
         private void HighlightCurrent(int posicao, int length)
         {
+            // remover highlight velho
             caixaDeTexto.SelectAll();
             caixaDeTexto.SelectionBackColor = caixaDeTexto.BackColor;
             caixaDeTexto.DeselectAll();
 
+            // highlight so a palavra encontrada
             if (posicao >= 0 && length > 0)
             {
                 caixaDeTexto.Select(posicao, length);
@@ -331,65 +333,110 @@ namespace EditorDeTextoSimples
                 caixaDeTexto.SelectionLength = 0;
             }
         }
-
-        private void LocalizarTexto(object sender, EventArgs e)
+        
+        private void HighlightAllOccurrences(string word)
         {
-            DialogoLocalizar dialogo = new DialogoLocalizar();
-            dialogo.TextoProcuradoAtualizado += (texto) =>
+            caixaDeTexto.SelectAll();
+            caixaDeTexto.SelectionBackColor = caixaDeTexto.BackColor;
+            caixaDeTexto.DeselectAll();
+
+            if (string.IsNullOrEmpty(word))
+                return;
+
+            var regex = new Regex(@"\b" + Regex.Escape(word) + @"\b", RegexOptions.IgnoreCase);
+            var matches = regex.Matches(caixaDeTexto.Text);
+            foreach (Match match in matches)
             {
-                if (!string.IsNullOrEmpty(texto))
-                {
-                    if (texto != textoProcurado)
-                    {
-                        textoProcurado = texto;
-                        ultimaPosicaoPesquisa = 0;
-                    }
-
-                    int posicao = EncontarTodaPalavra(caixaDeTexto.Text, textoProcurado, ultimaPosicaoPesquisa);
-
-                    if (posicao >= 0)
-                    {
-                        HighlightCurrent(posicao, textoProcurado.Length); // highlight so palavra encontrada
-                        ultimaPosicaoPesquisa = posicao + textoProcurado.Length;
-                    }
-                    else
-                    {
-                        MessageBox.Show("Fim da pesquisa. Reiniciando do início.", "Localizar", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        ultimaPosicaoPesquisa = 0;
-                        HighlightCurrent(-1, 0); // remover highlight
-                    }
-                }
-                else
-                {
-                    HighlightCurrent(-1, 0); // remover e retornar o highlight se nada foi encontrada e foi vazio
-                }
-            };
-
-            dialogo.SubstituirTextoRequisitado += (textoSubstituir) =>
-            {
-                if (!string.IsNullOrEmpty(textoProcurado) && !string.IsNullOrEmpty(textoSubstituir))
-                {
-                    if (caixaDeTexto.SelectedText.Equals(textoProcurado, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        caixaDeTexto.SelectedText = textoSubstituir;
-                        // depois da substituicao fazer highlight de novo da nova palavra substituida
-                        int posicao = EncontarTodaPalavra(caixaDeTexto.Text, textoProcurado, ultimaPosicaoPesquisa - textoProcurado.Length);
-                        HighlightCurrent(posicao, textoProcurado.Length);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Nenhuma palavra selecionada para substituir.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Nenhuma palavra foi localizada para substituir.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            };
-
-            dialogo.Show(this);
+                caixaDeTexto.Select(match.Index, match.Length);
+                caixaDeTexto.SelectionBackColor = Color.LightSkyBlue;
+            }
+            caixaDeTexto.SelectionStart = 0;
+            caixaDeTexto.SelectionLength = 0;
         }
 
+private void LocalizarTexto(object sender, EventArgs e)
+{
+    DialogoLocalizar dialogo = new DialogoLocalizar();
+    dialogo.TextoProcuradoAtualizado += (texto) =>
+    {
+        if (!string.IsNullOrEmpty(texto))
+        {
+            if (texto != textoProcurado)
+            {
+                textoProcurado = texto;
+                ultimaPosicaoPesquisa = 0;
+            }
+
+            int posicao = EncontarTodaPalavra(caixaDeTexto.Text, textoProcurado, ultimaPosicaoPesquisa);
+
+            if (posicao >= 0)
+            {
+                HighlightCurrent(posicao, textoProcurado.Length); // highlight so palavra encontrada
+                ultimaPosicaoPesquisa = posicao + textoProcurado.Length;
+            }
+            else
+            {
+                MessageBox.Show("Fim da pesquisa. Reiniciando do início.", "Localizar", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ultimaPosicaoPesquisa = 0;
+                HighlightCurrent(-1, 0); // remover highlight
+            }
+        }
+        else
+        {
+            HighlightCurrent(-1, 0); // remover e retornar highlight se nao ha nada
+        }
+    };
+
+    dialogo.SubstituirTextoRequisitado += (textoSubstituir) =>
+    {
+        if (!string.IsNullOrEmpty(textoProcurado) && !string.IsNullOrEmpty(textoSubstituir))
+        {
+            if (caixaDeTexto.SelectedText.Equals(textoProcurado, StringComparison.CurrentCultureIgnoreCase))
+            {
+                caixaDeTexto.SelectedText = textoSubstituir;
+                int posicao = EncontarTodaPalavra(caixaDeTexto.Text, textoProcurado, ultimaPosicaoPesquisa - textoProcurado.Length);
+                HighlightCurrent(posicao, textoProcurado.Length);
+            }
+            else
+            {
+                MessageBox.Show("Não há nada sublinhado para substituição.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+        else
+        {
+            MessageBox.Show("Não há palavra para substituir.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    };
+
+    dialogo.ReplaceAllRequested += (textoSubstituir) =>
+    {
+        if (!string.IsNullOrEmpty(textoProcurado) && !string.IsNullOrEmpty(textoSubstituir))
+        {
+            var regex = new Regex(@"\b" + Regex.Escape(textoProcurado) + @"\b", RegexOptions.IgnoreCase);
+            caixaDeTexto.Text = regex.Replace(caixaDeTexto.Text, textoSubstituir);
+            HighlightCurrent(-1, 0);
+            MessageBox.Show("Todos coincidências foram substituidos.", "Substituir tudo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        else
+        {
+            MessageBox.Show("Insire teixto para localizar e substituir.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    };
+
+    dialogo.HighlightAllToggled += (highlightAll) =>
+    {
+        if (highlightAll)
+            HighlightAllOccurrences(textoProcurado);
+        else
+            HighlightCurrent(-1, 0);
+    };
+
+    dialogo.FormClosed += (s, args) => {
+        HighlightCurrent(-1, 0);
+    };
+
+    dialogo.Show(this);
+}
         private int ContarOcorrencias(string texto)
         {
             if (string.IsNullOrEmpty(texto))
