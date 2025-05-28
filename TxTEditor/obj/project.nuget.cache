@@ -1,14 +1,23 @@
 {
   "version": 2,
+<<<<<<< Updated upstream
   "dgSpecHash": "49cdh2MzUU8=",
   "success": true,
   "projectFilePath": "C:\\Users\\danie\\OneDrive\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
   "expectedPackageFiles": [
+=======
+  "dgSpecHash": "D0f9fRc9dUw=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\danie\\OneDrive\\Desktop\\POO-PJ\\TxTEditor\\TxTEditor.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\danie\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.13\\microsoft.net.illink.tasks.8.0.13.nupkg.sha512",
+>>>>>>> Stashed changes
     "C:\\Users\\danie\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.13\\microsoft.netcore.app.ref.8.0.13.nupkg.sha512",
     "C:\\Users\\danie\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.13\\microsoft.windowsdesktop.app.ref.8.0.13.nupkg.sha512",
     "C:\\Users\\danie\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.13\\microsoft.aspnetcore.app.ref.8.0.13.nupkg.sha512",
     "C:\\Users\\danie\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.13\\microsoft.netcore.app.host.win-x64.8.0.13.nupkg.sha512"
   ],
+<<<<<<< Updated upstream
   "logs": [
     {
       "code": "Undefined",
@@ -17,4 +26,7 @@
       "message": "Problem reading the cache file C:\\Users\\danie\\OneDrive\\Desktop\\POO-PJ\\TxTEditor\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
     }
   ]
+=======
+  "logs": []
+>>>>>>> Stashed changes
 }

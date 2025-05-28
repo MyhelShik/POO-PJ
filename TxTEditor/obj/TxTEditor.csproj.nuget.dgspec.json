@@ -43,6 +43,17 @@
       "frameworks": {
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
+<<<<<<< Updated upstream
+=======
+          "dependencies": {
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.13, )",
+              "autoReferenced": true
+            }
+          },
+>>>>>>> Stashed changes
           "imports": [
             "net461",
             "net462",
