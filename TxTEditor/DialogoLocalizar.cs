@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using System.Windows.Forms;
 
 public class DialogoLocalizar : Form
@@ -52,11 +51,5 @@ public class DialogoLocalizar : Form
 
         textBoxFind.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) buttonFindNext.PerformClick(); };
         textBoxReplace.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) buttonReplace.PerformClick(); };
-        textBoxFind.TextChanged += (s, e) => {
-        TextoProcuradoAtualizado?.Invoke(textBoxFind.Text);
-        if (string.IsNullOrEmpty(textBoxFind.Text))
-        textBoxReplace.Text = ""; // Limpa o campo de substituição
-        };
     }
-
 }
