@@ -23,9 +23,6 @@ namespace EditorDeTextoSimples
         private string currentFilePath = null;
         private int currentFileFilterIndex = 1;
 
-        private ToolStripMenuItem menuRecentes;
-
-        private readonly System.Collections.Generic.List<string> ficheirosRecentes = new System.Collections.Generic.List<string>();
         public FormularioEditorDeTexto()
         {
             this.Text = "Editor de Texto Simples";
@@ -68,10 +65,11 @@ namespace EditorDeTextoSimples
 
             ToolStripMenuItem itemNovaJanela = new ToolStripMenuItem("Nova Janela");
             itemNovaJanela.Click += AbrirNovaJanela;
+            menuFicheiro.DropDownItems.Add(new ToolStripSeparator());
             menuFicheiro.DropDownItems.Add(itemNovaJanela);
 
-            menuRecentes = new ToolStripMenuItem("Recentes");
-            menuFicheiro.DropDownItems.Add(menuRecentes);
+            menuFicheiro.DropDownItems.Add(itemFecharJanela);
+            menuFicheiro.DropDownItems.Add(itemSair);
 
             barraDeMenus.Items.Add(menuFicheiro);
 
@@ -103,8 +101,6 @@ namespace EditorDeTextoSimples
             this.Controls.Add(caixaDeTexto);
             this.Controls.Add(barraDeMenus);
             this.MainMenuStrip = barraDeMenus;
-
-            AtualizarMenuFicheirosRecentes();
         }
 
         private void AbrirFicheiro(object sender, EventArgs e)
@@ -122,8 +118,6 @@ namespace EditorDeTextoSimples
                 {
                     caixaDeTexto.Text = File.ReadAllText(dialogoAbrirFicheiro.FileName);
                 }
-                currentFilePath = dialogoAbrirFicheiro.FileName;
-                AdicionarFicheiroRecente(currentFilePath);
             }
         }
 
@@ -177,8 +171,6 @@ namespace EditorDeTextoSimples
                 caixaDeTexto.SaveFile(filePath, RichTextBoxStreamType.RichText);
             else
                 File.WriteAllText(filePath, caixaDeTexto.Text);
-
-            AdicionarFicheiroRecente(filePath);
         }
 
         private bool ContainsFormatting(RichTextBox rtb)
@@ -245,53 +237,6 @@ namespace EditorDeTextoSimples
             };
             timer.Start();
         }
-
-        // ...depois de ShowNotification...
-        private void AtualizarMenuFicheirosRecentes()
-{
-    menuRecentes.DropDownItems.Clear();
-
-    if (ficheirosRecentes.Count == 0)
-    {
-        var vazio = new ToolStripMenuItem("Nenhum ficheiro recente");
-        vazio.Enabled = false;
-        menuRecentes.DropDownItems.Add(vazio);
-        return;
-    }
-
-    for (int i = 0; i < ficheirosRecentes.Count; i++)
-    {
-        string caminho = ficheirosRecentes[i];
-        ToolStripMenuItem itemRecente = new ToolStripMenuItem($"{i + 1}. {Path.GetFileName(caminho)}");
-        itemRecente.ToolTipText = caminho;
-        itemRecente.Click += (s, e) =>
-        {
-            if (File.Exists(caminho))
-            {
-                if (caminho.EndsWith(".rtf", StringComparison.OrdinalIgnoreCase))
-                    caixaDeTexto.LoadFile(caminho, RichTextBoxStreamType.RichText);
-                else
-                    caixaDeTexto.Text = File.ReadAllText(caminho);
-                currentFilePath = caminho;
-            }
-            else
-            {
-                MessageBox.Show("Ficheiro não encontrado.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                ficheirosRecentes.Remove(caminho);
-                AtualizarMenuFicheirosRecentes();
-            }
-        };
-        menuRecentes.DropDownItems.Add(itemRecente);
-    }
-}
-        private void AdicionarFicheiroRecente(string caminho)
-{
-    ficheirosRecentes.Remove(caminho); // Remove se já existir
-    ficheirosRecentes.Insert(0, caminho); // Adiciona no topo
-    if (ficheirosRecentes.Count > 5)
-        ficheirosRecentes.RemoveAt(5); // Mantém só 5
-    AtualizarMenuFicheirosRecentes();
-}
         private void SairPrograma(object sender, EventArgs e)
         {
             Application.Exit();
